@@ -9,3 +9,7 @@ connectDB();
 app.listen(PORT, () => {
   console.log(`\nServer is running on http://localhost:${PORT}`);
 });
+
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
