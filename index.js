@@ -1,6 +1,6 @@
+require('dotenv').config();
 const express = require('express');
 const app = express();
-require('dotenv').config();
 const PORT = process.env.PORT;
 const connectDB = require('./utils/db');
 const CarRoutes = require('./routes/CarRoutes');
