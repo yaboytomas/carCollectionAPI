@@ -3,13 +3,27 @@ const app = express();
 require('dotenv').config();
 const PORT = process.env.PORT;
 const connectDB = require('./utils/db');
+const CarRoutes = require('./routes/CarRoutes');
 
-connectDB();
+async function startServer(){
+    
+    // Connect to the database
+    await connectDB();
 
-app.listen(PORT, () => {
-  console.log(`\nServer is running on http://localhost:${PORT}`);
-});
+    // Middleware
+    app.use(express.json());
+    app.use('/api', CarRoutes);
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
+
+    // Start the server
+    app.listen(PORT, () => {
+    console.log(`\nServer is running on http://localhost:${PORT}`);
+    });
+
+    // Home route
+    app.get("/", (req, res) => {
+    res.send("Hello World!");
+    });
+}
+
+startServer();
