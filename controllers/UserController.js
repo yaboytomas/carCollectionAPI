@@ -43,12 +43,12 @@ exports.getUserByID = async (req, res) => {
 // POST register user with auth (JWT and HASH)
 exports.register = async (req, res) => {
     try {
-        const { name, email, passoword} = req.body;
+        const { name, email, password} = req.body;
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(400).json({ message: "User already exists" });
         } 
-        const hashedPassword = await bcrypt.hash(passoword, 12);
+        const hashedPassword = await bcrypt.hash(password, 12);
         const newUser = new User({ name, email, password: hashedPassword});
         await newUser.save();
         const token = jwt.sign(
@@ -66,7 +66,7 @@ exports.register = async (req, res) => {
 // POST login registered user 
 exports.login = async (req, res) => {
     try {
-        const {email, passoword} = req.body;
+        const {email, password} = req.body;
         const user = await User.findOne({email});
         if(!user) {
             return res.status(400).json({message: "Invalid email"});
