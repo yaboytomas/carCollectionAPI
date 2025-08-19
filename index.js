@@ -4,6 +4,7 @@ const app = express();
 const PORT = process.env.PORT;
 const connectDB = require('./utils/db');
 const CarRoutes = require('./routes/CarRoutes');
+const UserRoutes = require('./routes/UserRoutes');
 
 async function startServer(){
     
@@ -13,7 +14,7 @@ async function startServer(){
     // Middleware
     app.use(express.json());
     app.use('/api', CarRoutes);
-
+    app.use('/api', UserRoutes);
 
     // Start the server
     app.listen(PORT, () => {
