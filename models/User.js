@@ -20,4 +20,12 @@ const UserSchema = new mongoose.Schema({
     }     
 });
 
+// avoids returning password in JSON
+UserSchema.methods.toJSON = function() {
+    const user = this;
+    const userObject = user.toObject();
+    delete userObject.password;
+    return userObject;
+};
+
 module.exports = mongoose.model('User', UserSchema);
