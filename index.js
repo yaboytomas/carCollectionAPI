@@ -23,7 +23,7 @@ async function startServer(){
 
     // Home route
     app.get("/", (req, res) => {
-    res.send("Hello World!");
+    res.send("We in this bitch!");
     });
 }
 

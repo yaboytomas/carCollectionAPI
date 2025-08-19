@@ -1,4 +1,6 @@
 const User = require('../models/User')
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 // GET all users
 exports.getAllUsers = async (req, res) => {
@@ -26,15 +28,62 @@ exports.getUserByID = async (req, res) => {
 }
 
 // POST create a user
-exports.createUser = async (req, res) => {
+/* exports.createUser = async (req, res) => {
     try {
         const newUser = new User(req.body);
-        const options = { new: true, runValidators: true };
         await newUser.save();
         res.status(201).json({message: "User created successfully", newUser})
     } catch (error) {
         console.error("Error creating user:", error);
         res.status(400).json({message: error.message});
+    }
+}
+*/
+
+// POST register user with auth (JWT and HASH)
+exports.register = async (req, res) => {
+    try {
+        const { name, email, passoword} = req.body;
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ message: "User already exists" });
+        } 
+        const hashedPassword = await bcrypt.hash(passoword, 12);
+        const newUser = new User({ name, email, password: hashedPassword});
+        await newUser.save();
+        const token = jwt.sign(
+            {userId: newUser._id, name: newUser.name, email: newUser.email},
+            process.env.JWT_SECRET,
+            { expiresIn: '15m'}
+        );
+        res.status(201).json({message: "User registered successfully", token, newUser});
+    } catch (error) {
+        console.error("Error registering user:", error);
+        res.status(500).json({message: error.message});
+    }
+}
+
+// POST login registered user 
+exports.login = async (req, res) => {
+    try {
+        const {email, passoword} = req.body;
+        const user = await User.findOne({email});
+        if(!user) {
+            return res.status(400).json({message: "Invalid email"});
+        }
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(400).json({message: "Invalid password"});
+        }
+        const token = jwt.sign(
+            {userId: user._id, email: user.email},
+            process.env.JWT_SECRET,
+            { expiresIn: '15m'}
+        );
+        res.status(200).json({message: "Login successful", token});
+    } catch (error) {
+        console.error("Error logging in user:", error);
+        res.status(500).json({message: error.message});
     }
 }
 
