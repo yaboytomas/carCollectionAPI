@@ -6,6 +6,8 @@ const authenticateToken = require('../middleware/auth');
 // no auth required
 router.post('/register', UserController.register); // Register a new user
 router.post('/login', UserController.login); // Login user
+router.post('/request-password-reset', UserController.requestPasswordReset); // Request password reset
+router.post('/reset-password', UserController.resetPassword); // Reset password
 
 // auth required
 router.use(authenticateToken); // applies auth to all below
