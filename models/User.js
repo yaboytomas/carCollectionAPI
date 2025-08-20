@@ -14,17 +14,25 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    createdAt: {
+    passwordResetToken: {
+        type: String,
+        default: null
+    },
+    passwordResetExpires: {
         type: Date,
-        default: Date.now
-    }     
-});
+        default: null
+    }
+}, { timestamps: true });
 
-// avoids returning password in JSON
+
+
+// avoids returning password/resettoken in JSON
 UserSchema.methods.toJSON = function() {
     const user = this;
     const userObject = user.toObject();
     delete userObject.password;
+    delete userObject.passwordResetToken;
+    delete userObject.passwordResetExpires;
     return userObject;
 };
 
