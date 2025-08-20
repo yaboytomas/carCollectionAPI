@@ -145,3 +145,25 @@ exports.requestPasswordReset = async (req, res) => {
         res.status(500).json({message: error.message}); 
     }
 };
+
+// POST actual password reset after request
+exports.resetPassword = async (req, res) => {
+    try {
+        const { token, newPassword } = req.body;
+        if (!token || !newPassword) {
+            return res.status(400).json({message: "Token and new password are required"});
+        }
+        if (newPassword.length < 6) {
+            return res.status(400).json({message: "Password must be at least 6 characters long"});
+        }
+        const hasedPassword = await bcrypt.hash(newPassword, 12);
+        user.password = hasedPassword;
+        user.passwordResetToken = null;
+        user.passwordResetExpires = null;
+        await user.save();
+        res.status(200).json({message: "Password reset successfully"});
+    } catch (error) {
+        console.error("Error resetting password:", error);
+        res.status(500).json({message: error.message});
+    }
+}
