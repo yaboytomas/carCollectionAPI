@@ -14,7 +14,7 @@ async function startServer(){
     // Middleware
     app.use(express.json());
     app.use('/api', CarRoutes);
-    app.use('/api', UserRoutes);
+    app.use('/api', UserRoutes);  
 
     // Start the server
     app.listen(PORT, () => {
