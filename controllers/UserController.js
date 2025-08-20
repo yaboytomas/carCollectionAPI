@@ -1,6 +1,9 @@
 const User = require('../models/User')
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+const { sendPasswordResetEmail } = require('../utils/email');
+const { send } = require('process');
 
 // GET all users
 exports.getAllUsers = async (req, res) => {
@@ -117,4 +120,28 @@ exports.deleteUser = async (req, res) => {
         console.error("Error deleting user:", error);
         res.status(500).json({message: error.message});
     }
-}
+} 
+
+// POST request new password
+exports.requestPasswordReset = async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            return res.status(400).json({message: "Email is required"});
+        }
+        const user = await User.findOne({email});
+        if(!user) {
+            return res.status(200).json({message: "If this email is registered, you will receive a password reset link."});
+        }
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        const resetTokenExpiry = Date.now() + 15 * 60 * 1000; // 15 minutes from now
+        user.passwordResetToken = resetToken;
+        user.passwordResetExpires = resetTokenExpiry;
+        await user.save();
+        await sendPasswordResetEmail(user.email, resetToken);
+        res.status(200).json({message: "If an account with that email exists, a password reset link has been sent."});
+    } catch (error) {
+        console.error("Error requesting password reset:", error);
+        res.status(500).json({message: error.message}); 
+    }
+};
