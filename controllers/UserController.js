@@ -2,7 +2,7 @@ const User = require('../models/User')
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const { sendPasswordResetEmail } = require('../utils/email');
+const { sendPasswordResetEmail, sendWelcomeEmail } = require('../utils/email');
 const { send } = require('process');
 
 // GET all users
@@ -59,6 +59,9 @@ exports.register = async (req, res) => {
             process.env.JWT_SECRET,
             { expiresIn: '15m'}
         );
+        sendWelcomeEmail(newUser.email, newUser.name).catch(error => {
+            console.error('Welcome email failed for:', newUser.email, error.message);
+        });
         res.status(201).json({message: "User registered successfully", token, newUser});
     } catch (error) {
         console.error("Error registering user:", error);

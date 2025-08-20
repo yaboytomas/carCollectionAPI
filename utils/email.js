@@ -19,6 +19,18 @@ const sendPasswordResetEmail = async (email, token) => {
     await transporter.sendMail(mailOptions);
 };
 
+const sendWelcomeEmail = async (email, name) => {
+    const loginUrl = `${process.env.FRONTEND_URL}/login`;
+    const mailOptions = {
+        from: process.env.EMAIL_FROM,
+        to: email,
+        subject: 'Welcome to Our Service',
+        text: `Hi ${name},\n\nThank you for registering! You can log in using the following link:\n\n${loginUrl}`
+    };
+    await transporter.sendMail(mailOptions);
+}
+
 module.exports = {
-    sendPasswordResetEmail
+    sendPasswordResetEmail,
+    sendWelcomeEmail
 };
