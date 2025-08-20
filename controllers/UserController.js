@@ -156,6 +156,11 @@ exports.resetPassword = async (req, res) => {
         if (newPassword.length < 6) {
             return res.status(400).json({message: "Password must be at least 6 characters long"});
         }
+        const user = await User.findOne({
+            passwordResetToken: token,
+            passwordResetExpires: {$gt: Date.now()}
+        });
+        
         const hasedPassword = await bcrypt.hash(newPassword, 12);
         user.password = hasedPassword;
         user.passwordResetToken = null;
