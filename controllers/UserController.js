@@ -164,8 +164,8 @@ exports.resetPassword = async (req, res) => {
             passwordResetExpires: {$gt: Date.now()}
         });
         
-        const hasedPassword = await bcrypt.hash(newPassword, 12);
-        user.password = hasedPassword;
+        const hashedPassword = await bcrypt.hash(newPassword, 12);
+        user.password = hashedPassword;
         user.passwordResetToken = null;
         user.passwordResetExpires = null;
         await user.save();
